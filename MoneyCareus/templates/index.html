@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>MoneyCareus</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.google.com/jsapi"></script>
+      <script>
+       google.load("visualization", "1", {packages:["corechart"]});
+       google.setOnLoadCallback(drawChart);
+       function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+         ['Категория', 'Количество'],
+            {% for key in data.expenses %}
+            ['{{ key }}', {{ data.expenses[key] }}],
+            {% endfor %}
+        ]);
+        var options = {
+         title: 'Статистика расходов:',
+         is3D: true,
+         pieResidueSliceLabel: 'Остальное'
+        };
+        var chart = new google.visualization.PieChart(document.getElementById('air'));
+         chart.draw(data, options);
+       }
+      </script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-11">
+                <h1>MoneyCareus — {{ data.family.name }} — {{ data.family.balance }} руб.</h1>
+            </div>
+            <div class="col-md-1">
+                <a href="/logout">{{ data.user.name }} - выйти</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Список операций:</h2>
+                <table class="table">
+                    <tr>
+                        <th>Тип</th>
+                        <th>Сумма</th>
+                        <th>Член семьи</th>
+                        <th>Категория</th>
+                        <th>Дата</th>
+                    </tr>
+                    {% for transaction in data.transactions %}
+                    <tr>
+                        {% if transaction.type == 1 %}
+                            <td>Доход</td>
+                        {% else %}
+                            <td>Расход</td>
+                        {% endif %}
+                        <td>{{ transaction.amount }}</td>
+                        <td>{{ data.getFamilyUserById(transaction.user_id).name }}</td>
+                        <td>{{ data.getCategoryById(transaction.category).name }}</td>
+                        <td>{{ transaction.time_str }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+                <form action="/addTransaction" method="post">
+                    <label>Тип:</label>
+                    <select size="1" name="type" required>
+                        <option value="1">Доход</option>
+                        <option value="2">Расход</option>
+                    </select>
+
+                    <label>Сумма:</label>
+                    <input type="text" pattern="[0-9.]{1,10}" name="amount" required>
+
+                    <label>Категория:</label>
+                    <select size="1" name="category" required>
+                        {% for cat in data.categories %}
+                        <option value="{{ cat.id }}">{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <input type="submit" value="Add" class="btn btn-primary">
+                </form>
+
+            </div>
+            <div class="col-md-6">
+                <div id="air"></div>
+                <h3>Список семьи:</h3>
+                <ul>
+                    {% for user in data.family_users %}
+                        <li><small class="small">{{ user.status_str }}</small> {{ user.name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <hr>
+        {% if data.user.id == data.family.owner_id %}
+        <center>Пункт управления семейством от лидера семьи</center>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                            <h3>Добавить новую категорию:</h3>
+                            <form action="/addCategory" method="POST">
+                                <label>Название категории:</label>
+                                <input type="text" name="Name" required placeholder="Название">
+                                <input type="submit" value="Add" class="btn btn-primary">
+                            </form>
+                            <h3>Список категорий:</h3>
+                            <ul>
+                                {% for cat in data.categories %}
+                                <li>
+                                    {{ cat.name }}
+                                    {% if cat.owner_id != 0 %}
+                                        - <a href="/removeCategory?id={{ cat.id }}"> remove</a>
+                                    {% endif %}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        Чтобы добавить человека в семью, он должен перейти по этой ссылки:
+                        <br><br>
+                        <p>Стандартные права доступа:</p>
+                        <a href="/addInFamily?id={{ data.family.id }}&from={{ data.user.username }}&status=2">http://127.0.0.1:5000/addInFamily?id={{ data.family.id }}&from={{ data.user.username }}&status=2</a>
+                        <br><br>
+                        <p>Детские права доступа:</p>
+                        <a href="/addInFamily?id={{ data.family.id }}&from={{ data.user.username }}&status=3">http://127.0.0.1:5000/addInFamily?id={{ data.family.id }}&from={{ data.user.username }}&status=3</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                            <h3>Настройки приватности:</h3>
+                            <label>SafeMode:</label>
+                            {% if data.family.safemode == 0 %}
+                                <a href="/changeSafeMode?enable=1">включить</a>
+                            {% else %}
+                                <a href="/changeSafeMode?enable=0">выключить</a>
+                            {% endif %}
+                            <br><small class="small">При включенном режиме 'SafeMode' от детей будут скрывать все транзакции, сделанные взрослыми членами семьи.
+                            При этом всем взрослым будут отображаться все детские транзакции.<br>
+                            Также детям будет скрыта статистика расходов взрослых. У них будет отображаться статистика только по их расходам.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</body>
+</html>

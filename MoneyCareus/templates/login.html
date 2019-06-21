@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>MoneyCareus</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 col-md-offset-2">
+                <h3>Авторизация:</h3>
+                <form method="post" action="/login">
+                    <div class="form-group">
+                        <label for="username">Логин:</label>
+                        <input type="text" name="username" class='form-control' pattern="[A-Za-z0-9]{6,32}" required>
+                        <br><small class="small">Символы латинского алфавита и цифры. Длина от 6 до 32 символов.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Пароль:</label>
+                        <input type="password" name="password" class='form-control' pattern="[А-Яа-яA-Za-z0-9_]{6,32}" required>
+                        <br><small class="small">Кириллица, символы латинского алфавита и цифры. Длина от 6 до 32 символов.</small>
+                    </div>
+                    <input type="submit" value="Войти" class="btn btn-primary">
+                </form>
+            </div>
+             <div class="col-md-4">
+                <h3>Регистрация:</h3>
+                <form method="post" action="/reg">
+                    <div class="form-group">
+                        <label for="username">Логин главы семьи:</label>
+                        <input type="text" name="username"class='form-control'  pattern="[A-Za-z0-9]{6,32}" required>
+                        <br><small class="small">Символы латинского алфавита и цифры. Длина от 6 до 32 символов.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="user_name">Имя главы семьи:</label>
+                        <input type="text" name="user_name" class='form-control' pattern="[А-Яа-яA-Za-z ]{4,32}" required>
+                        <br><small class="small">Кириллица и символы латинского алфавита. Длина от 4 до 32 символов.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="family_name">Фамилия семьи:</label>
+                        <input type="text" name="family_name" class='form-control' pattern="[А-Яа-яA-Za-z ]{4,32}" required>
+                        <br><small class="small">Кириллица и символы латинского алфавита. Длина от 4 до 32 символов.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Пароль:</label>
+                        <input type="password" name="password" class='form-control' pattern="[А-Яа-яA-Za-z0-9_]{6,32}" required>
+                        <br><small class="small">Кириллица, символы латинского алфавита, цифры и символ подчёркивания. Длина от 6 до 32 символов.</small>
+                    </div>
+                    <input type="submit" value="Зарегистрироваться" class="btn btn-primary">
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</body>
+</html>
